@@ -19,22 +19,12 @@
  */
 public final class ApplicationConfig {
 
-    private ApplicationConfig() {
-        // no instance
-    }
+    //Path to the client secrets file
+    public String RESOURCES_CLIENT_SECRETS_JSON;
 
-    /**
-     * Specify the name of your application. If the application name is
-     * {@code null} or blank, the application will log a warning. Suggested
-     * format is "MyCompany-Application/1.0".
-     */
-    static final String APPLICATION_NAME = "test";
+    public String PACKAGE_NAME;
 
-    /**
-     * Specify the package name of the app.
-     */
-    static final String PACKAGE_NAME = "com.addcn.car8891";
+    public String APK_PATH;
 
-    static final String APK_FILE_PATH = "/resources/UsedCar-release.apk";
-
+    public String APK_NAME;
 }

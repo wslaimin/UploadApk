@@ -1,0 +1,75 @@
+<?xml version="1.0" ?>
+<project name="publishApk" default="dist" basedir=".">
+    <property name="src" location="src"/>
+    <property name="build" location="build"/>
+    <property name="dist" location="dist"/>
+
+    <path id="libs">
+        <fileset dir="lib">
+            <include name="**/*.jar"/>
+            <exclude name="proguard.jar"/>
+        </fileset>
+    </path>
+
+    <target name="clean">
+        <delete>
+            <fileset dir="dist/lib" includes="*.jar"/>
+        </delete>
+    </target>
+    <target name="init" depends="clean">
+        <mkdir dir="${build}"/>
+    </target>
+    <target name="compile" depends="init">
+        <javac srcdir="${src}" destdir="${build}">
+            <classpath refid="libs"/>
+        </javac>
+    </target>
+    <target name="dist" depends="compile">
+        <mkdir dir="${dist}/lib"/>
+    </target>
+    <pathconvert property="classpath" pathsep="">
+        <path refid="libs"/>
+        <mapper>
+            <chainedmapper>
+                <flattenmapper />
+                <globmapper from="*.jar" to="lib/*.jar " />
+            </chainedmapper>
+        </mapper>
+    </pathconvert>
+    <target name="jar" depends="dist">
+        <jar jarfile="${dist}/lib/publishApk.jar" basedir="${build}">
+            <zipgroupfileset dir="lib" includes="**/*.jar"/>
+        </jar>
+    </target>
+
+    <!--obfuscate有問題-->
+    <taskdef resource="proguard/ant/task.properties" classpath="lib/proguard.jar"/>
+    <target name="obfuscate" depends="jar">
+        <proguard ignorewarnings="true">
+            <injar file="${dist}/lib/publishApk.jar" filter="!META-INF/**"/>
+            <outjar file="${dist}/lib/obfuscated_publishApk.jar"/>
+            <libraryjar file="lib/guava-23.0.jar"/>
+            <libraryjar file="${java.home}/lib/rt.jar"/>
+            <libraryjar file="lib/commons-codec-1.11.jar"/>
+            <libraryjar file="lib/google-api-client-1.25.0.jar"/>
+            <libraryjar file="lib/google-api-services-androidpublisher-v3-rev18-1.24.1.jar"/>
+            <libraryjar file="lib/google-http-client-1.25.0.jar"/>
+            <libraryjar file="lib/google-http-client-jackson2-1.25.0.jar"/>
+            <libraryjar file="lib/google-oauth-client-1.25.0.jar"/>
+            <libraryjar file="lib/jackson-core-2.9.6.jar"/>
+            <libraryjar file="lib/org-apache-commons-logging.jar"/>
+            <keep access="public" name="MyUploadApkToDraft">
+                <method access="public static"
+                    type="void"
+                    name="main"
+                    parameters="java.lang.String[]"/>
+            </keep>
+            <keep access="public" name="MyUploadApkToAlpha">
+                <method access="public static"
+                        type="void"
+                        name="main"
+                        parameters="java.lang.String[]"/>
+            </keep>
+        </proguard>
+    </target>
+</project>

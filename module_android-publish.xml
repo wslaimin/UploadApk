@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_android-publish" default="compile.module.android-publish">
+  <dirname property="module.android-publish.basedir" file="${ant.file.module_android-publish}"/>
+  
+  <property name="module.jdk.home.android-publish" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.android-publish" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.android-publish" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.android-publish" value="-encoding UTF-8 -source 8 -target 8 ${compiler.args}"/>
+  
+  <property name="android-publish.output.dir" value="${module.android-publish.basedir}/out/production/android-publish"/>
+  <property name="android-publish.testoutput.dir" value="${module.android-publish.basedir}/out/test/android-publish"/>
+  
+  <path id="android-publish.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="android-publish.module.production.classpath">
+    <path refid="${module.jdk.classpath.android-publish}"/>
+    <path refid="library.lib.classpath"/>
+    <fileset dir="${basedir}/lib">
+      <patternset refid="library.patterns"/>
+    </fileset>
+  </path>
+  
+  <path id="android-publish.runtime.production.module.classpath">
+    <pathelement location="${android-publish.output.dir}"/>
+    <path refid="library.lib.classpath"/>
+    <fileset dir="${basedir}/lib">
+      <patternset refid="library.patterns"/>
+    </fileset>
+  </path>
+  
+  <path id="android-publish.module.classpath">
+    <path refid="${module.jdk.classpath.android-publish}"/>
+    <pathelement location="${android-publish.output.dir}"/>
+    <path refid="library.lib.classpath"/>
+    <fileset dir="${basedir}/lib">
+      <patternset refid="library.patterns"/>
+    </fileset>
+  </path>
+  
+  <path id="android-publish.runtime.module.classpath">
+    <pathelement location="${android-publish.testoutput.dir}"/>
+    <pathelement location="${android-publish.output.dir}"/>
+    <path refid="library.lib.classpath"/>
+    <fileset dir="${basedir}/lib">
+      <patternset refid="library.patterns"/>
+    </fileset>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.android-publish">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.android-publish">
+    <patternset refid="excluded.from.module.android-publish"/>
+  </patternset>
+  
+  <path id="android-publish.module.sourcepath">
+    <dirset dir="${module.android-publish.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.android-publish" depends="compile.module.android-publish.production,compile.module.android-publish.tests" description="Compile module android-publish"/>
+  
+  <target name="compile.module.android-publish.production" depends="register.custom.compilers" description="Compile module android-publish; production classes">
+    <mkdir dir="${android-publish.output.dir}"/>
+    <javac2 destdir="${android-publish.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.android-publish}/javac">
+      <compilerarg line="${compiler.args.android-publish}"/>
+      <bootclasspath refid="android-publish.module.bootclasspath"/>
+      <classpath refid="android-publish.module.production.classpath"/>
+      <src refid="android-publish.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.android-publish"/>
+    </javac2>
+    
+    <copy todir="${android-publish.output.dir}">
+      <fileset dir="${module.android-publish.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.android-publish.tests" depends="register.custom.compilers,compile.module.android-publish.production" description="compile module android-publish; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.android-publish" description="cleanup module">
+    <delete dir="${android-publish.output.dir}"/>
+    <delete dir="${android-publish.testoutput.dir}"/>
+  </target>
+</project>
